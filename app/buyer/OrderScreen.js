@@ -55,6 +55,7 @@ export function OrderScreen({ route, navigation }) {
       setTotalCost(totalCostOfPurchase);
     }
     console.log("totalCostOfPurchase>>", totalCostOfPurchase);
+    console.log("orderDetail>>", orderDetail);
   }, []);
 
   const [items] = React.useState(orderDetail);

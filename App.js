@@ -22,7 +22,7 @@ import {
   storeApplicationInfo,
   deleteApplicationInfo,
 } from "./constants/StoreInfo";
-import { SellerOrderScreen } from "./app/seller/SellerOrdersScreen";
+import { SellerOrdersScreen } from "./app/seller/SellerOrdersScreen";
 import { SellerMenuScreen } from "./app/seller/SellerMenuScreen";
 import { SellerInsightsScreen } from "./app/seller/SellerInsightsScreen";
 import { CreateProductScreen } from "./app/seller/CreateProductScreen";
@@ -75,21 +75,12 @@ export default function App() {
     });
   }, []);
 
-  // function sellerTab() {
-  //   return (
-  //     <Tab.Navigator>
-  //       <Tab.Screen name="Order List" component={SellerOrderScreen} />
-  //       <Tab.Screen name="Menu" component={SellerMenuScreen} />
-  //       <Tab.Screen name="Insights" component={SellerInsightsScreen} />
-  //     </Tab.Navigator>
-  //   );
-  // }
   const TabNavigator = () => {
     return (
-      <Tab.Navigator initialRouteName={SellerOrderScreen}>
+      <Tab.Navigator initialRouteName={SellerOrdersScreen}>
         <Tab.Screen
-          name="CreateProductScreen"
-          component={CreateProductScreen}
+          name="SellersOrderScreen"
+          component={SellerOrdersScreen}
           options={{
             title: "Current Orders",
             tabBarIcon: ({ focused }) => (
@@ -164,7 +155,7 @@ export default function App() {
                 headerRight: () => (
                   <TouchableOpacity
                     // onPress={() => navigation.navigate("Profile Info")}
-                    onPress={() => navigation.navigate("SellerOrderScreen")}
+                    onPress={() => navigation.navigate("SellersOrderScreen")}
                   >
                     <CustomProfileImage></CustomProfileImage>
                   </TouchableOpacity>
@@ -187,7 +178,7 @@ export default function App() {
               component={CameraViewScreen}
             />
             <Stack.Screen
-              name="SellerOrderScreen"
+              name="SellersOrderScreen"
               component={TabNavigator}
               options={{ headerShown: false }}
             />
