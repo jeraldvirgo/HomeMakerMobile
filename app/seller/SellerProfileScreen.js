@@ -9,13 +9,15 @@ import {
   storeApplicationInfo,
   getApplicationInfo,
 } from "../../constants/StoreInfo";
-import { createUser, updateUser } from "../network/HttpService";
-export function ProfileScreen({ route, navigation }) {
+import { createBrand, createUser, updateUser } from "../network/HttpService";
+export function SellerProfileScreen({ route, navigation }) {
   const { phoneNumber, OTP, isExistingUser } = route.params;
   console.debug("Received PhoneNumber", phoneNumber);
   console.debug("Received OTP", OTP);
   console.debug("Received isExistingUser", isExistingUser);
   const [userName, setUserName] = React.useState("");
+  const [userBrandName, setUserBrandName] = React.useState("");
+  const [userBrandDescription, setUserBrandDescription] = React.useState("");
   const [address, setAddress] = React.useState("");
   const [userId, setUserId] = React.useState("");
 
@@ -24,6 +26,8 @@ export function ProfileScreen({ route, navigation }) {
       setUserName(await getApplicationInfo("userName"));
       setAddress(await getApplicationInfo("address"));
       setUserId(await getApplicationInfo("userId"));
+      setUserBrandName(await getApplicationInfo("userBrandName"));
+      setUserBrandDescription(await getApplicationInfo("userBrandDescription"));
     }
     if (isExistingUser) {
       console.debug("Is an Existing User !!!");
@@ -43,8 +47,8 @@ export function ProfileScreen({ route, navigation }) {
           avatarUrl: "Someurl",
         };
         console.debug("updateUserData", updateUserData);
-        const updateUserResponse = updateUser(updateUserData);
-        console.debug("Update User Response", updateUserResponse);
+        const userId = await updateUser(updateUserData);
+        setUserId(userId);
       } else {
         const createUserData = {
           userName: userName,
@@ -54,15 +58,31 @@ export function ProfileScreen({ route, navigation }) {
           avatarUrl: "Someurl",
         };
         console.debug("createUserData", createUserData);
-        const createdUserResponse = createUser(createUserData);
-        console.debug("Create User Response", createdUserResponse);
+        const userId = await createUser(createUserData);
+        setUserId(userId);
       }
 
+      const createBrandData = {
+        userId: userId,
+        brandName: userBrandName,
+        brandImageUrl:
+          "https://cdn3.vectorstock.com/i/1000x1000/78/67/home-food-symbol-vector-1957867.jpg",
+        brandSubType: "veg",
+        brandDescription: "userBrandDescription",
+        brandDescriptionAdditional: "Additional Info",
+        brandLocation: address,
+        brandTimingOpen: "00.00",
+        brandTimingClose: "00.00",
+      };
+      const createBrandResponse = await createBrand(userId, createBrandData);
+      await storeApplicationInfo("userId", userName);
       await storeApplicationInfo("userName", userName);
       await storeApplicationInfo("phoneNumber", phoneNumber);
       await storeApplicationInfo("address", address);
+      await storeApplicationInfo("userBrandName", userBrandName);
+      await storeApplicationInfo("userBrandDescription", userBrandDescription);
       DeviceEventEmitter.emit("event.login", "true");
-      DeviceEventEmitter.emit("event.userType", "buyer");
+      DeviceEventEmitter.emit("event.userType", "seller");
     } catch (error) {
       console.debug("Error from AsyncStorage", error);
     }
@@ -78,6 +98,22 @@ export function ProfileScreen({ route, navigation }) {
         value={userName}
         onChangeText={setUserName}
       ></CustomTextbox>
+
+      <CustomLabel title={"Brand Name"} />
+      <CustomTextbox
+        title={"Brand Name"}
+        type="default"
+        value={userBrandName}
+        onChangeText={setUserBrandName}
+      ></CustomTextbox>
+
+      <CustomLabel title={"Store Description"} />
+      <CustomTextboxMultiLine
+        title={"Store Description"}
+        value={userBrandDescription}
+        onChangeText={setUserBrandDescription}
+      ></CustomTextboxMultiLine>
+
       <CustomLabel title={"Address"} />
       <CustomTextboxMultiLine
         title={"Address"}

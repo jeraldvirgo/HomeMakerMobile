@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
   imageSize: {
     width: 200,
     height: 200,
-    borderColor: COLORS.BUTTON,
     borderWidth: 2,
   },
 });

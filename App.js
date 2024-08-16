@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { LoginScreen } from "./app/auth/LoginScreen";
 import { OtpScreen } from "./app/auth/OtpScreen";
 import { ProfileScreen } from "./app/auth/ProfileScreen";
+import { SellerProfileScreen } from "./app/seller/SellerProfileScreen";
 import { OrderScreen } from "./app/buyer/OrderScreen";
 import { ProductDetailsScreen } from "./app/buyer/ProductDetailsScreen";
 import { ProductListScreen } from "./app/buyer/ProductListScreen";
@@ -50,12 +51,16 @@ function onInfoClick() {
 export default function App() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [login, setLogin] = React.useState(false);
+  const [isSeller, setIsSeller] = React.useState(false);
 
   React.useEffect(() => {
     const isLoggedIn = async (setLogin) => {
       try {
         // await deleteApplicationInfo("isLogin");
+        // await deleteApplicationInfo("userType");
         let isLogin = await getApplicationInfo("isLogin");
+        let userType = await getApplicationInfo("userType");
+        userType === "seller" ? setIsSeller(true) : setIsSeller(false);
         console.debug("First Launch Flow : ", isLogin);
         isLogin == null ? setLogin(false) : setLogin(true);
       } catch (error) {
@@ -72,6 +77,20 @@ export default function App() {
         await storeApplicationInfo("isLogin", eventData);
       };
       updateFirstLogin();
+    });
+
+    DeviceEventEmitter.addListener("event.userType", (eventData) => {
+      console.debug("Event event.userType", eventData);
+      if (eventData === "seller") {
+        setIsSeller(true);
+      }
+      if (eventData === "buyer") {
+        setIsSeller(false);
+      }
+      let updateUserType = async () => {
+        await storeApplicationInfo("userType", eventData);
+      };
+      updateUserType();
     });
   }, []);
 
@@ -143,19 +162,18 @@ export default function App() {
     return <SplashScreen />;
   }
 
-  return (
+  return !isSeller ? (
     <NavigationContainer>
       <Stack.Navigator>
         {login ? (
-          <>
+          <Stack.Group>
             <Stack.Screen
               name="Resturants"
               component={ProductListScreen}
               options={({ navigation }) => ({
                 headerRight: () => (
                   <TouchableOpacity
-                    // onPress={() => navigation.navigate("Profile Info")}
-                    onPress={() => navigation.navigate("SellersOrderScreen")}
+                    onPress={() => navigation.navigate("Profile Info")}
                   >
                     <CustomProfileImage></CustomProfileImage>
                   </TouchableOpacity>
@@ -163,32 +181,64 @@ export default function App() {
               })}
             />
             <Stack.Screen name="Food" component={ProductDetailsScreen} />
-            <Stack.Screen name="Order" component={OrderScreen} />
             <Stack.Screen
               name="ProductDetailsScreen"
               component={ProductDetailsScreen}
             />
-            {/* <Stack.Screen
-              name="ProductListScreen"
-              component={ProductListScreen}
-            /> */}
+            <Stack.Screen name="Order" component={OrderScreen} />
             <Stack.Screen name="Profile Info" component={OrderHistoryScreen} />
-            <Stack.Screen
-              name="CameraViewScreen"
-              component={CameraViewScreen}
-            />
             <Stack.Screen
               name="SellersOrderScreen"
               component={TabNavigator}
               options={{ headerShown: false }}
             />
-          </>
+            <Stack.Screen
+              name="CameraViewScreen"
+              component={CameraViewScreen}
+            />
+          </Stack.Group>
         ) : (
-          <>
+          <Stack.Group>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="OTP" component={OtpScreen} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
-          </>
+            <Stack.Screen
+              name="SellerProfile"
+              component={SellerProfileScreen}
+            />
+          </Stack.Group>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  ) : (
+    <NavigationContainer>
+      <Stack.Navigator>
+        {login ? (
+          <Stack.Group>
+            <Stack.Screen
+              name="SellersOrderScreen"
+              component={TabNavigator}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="CameraViewScreen"
+              component={CameraViewScreen}
+            />
+            <Stack.Screen
+              name="CreateProductScreen"
+              component={CreateProductScreen}
+            />
+          </Stack.Group>
+        ) : (
+          <Stack.Group>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="OTP" component={OtpScreen} />
+            <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen
+              name="SellerProfile"
+              component={SellerProfileScreen}
+            />
+          </Stack.Group>
         )}
       </Stack.Navigator>
     </NavigationContainer>

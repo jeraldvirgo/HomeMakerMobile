@@ -1,49 +1,35 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+  FlatList,
+} from "react-native";
 import React from "react";
-import { CustomButton } from "../../components/CustomButton";
 import { COLORS } from "../../constants/Colors";
 import { CustomBoldLabel, CustomLabel } from "../../components/CustomLabel";
 import { DataTable } from "react-native-paper";
+import { getSellerOrderList } from "../network/HttpService";
 
 export function SellerOrdersScreen() {
-  let items = [
-    {
-      brandId: 1,
-      count: 1,
-      id: 1,
-      productDescription: "Pure Homemade Food",
-      productDescriptionAdditional: "Veg",
-      productImageUrl:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0GXIb59Wp5ZqKvZiaH0xDF6PgVOzR4yWGMFnmudskHQ&s",
-      productName: "Biriyani",
-      productPrice: 100,
-    },
-    {
-      brandId: 1,
-      count: 1,
-      id: 2,
-      productDescription: "Pure Homemade Food",
-      productDescriptionAdditional: "Veg",
-      productImageUrl:
-        "https://img.freepik.com/premium-photo/small-bowl-roti-is-white-background_871710-681.jpg",
-      productName: "Roti",
-      productPrice: 50,
-    },
-    {
-      brandId: 1,
-      count: 1,
-      id: 3,
-      productDescription: "Pure Homemade Food",
-      productDescriptionAdditional: "Veg",
-      productImageUrl:
-        "https://i.pinimg.com/736x/dc/7b/fc/dc7bfcc37d554d31dc752135cbc444b5.jpg",
-      productName: "Samosa",
-      productPrice: 50,
-    },
-  ];
-  return (
+  const [orderList, setOrderList] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+  React.useEffect(() => {
+    const loadOrderList = async () => {
+      try {
+        setOrderList(await getSellerOrderList(1));
+        setLoading(false);
+      } catch (error) {
+        console.debug("Error from AsyncStorage", error);
+      }
+    };
+    loadOrderList();
+  }, []);
+
+  const renderItem = ({ item, index }) => (
     <>
-      <View style={styles.buttonContainer}>
+      {/* <View style={styles.buttonContainer}>
         <View>
           <TouchableOpacity style={styles.button}>
             <Text>{"Orders"}</Text>
@@ -59,13 +45,13 @@ export function SellerOrdersScreen() {
             <Text>{"Delivered"}</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </View> */}
       <View style={styles.card}>
-        <CustomLabel title={"Name: Jerald Philip"}></CustomLabel>
-        <CustomLabel title={"Address: L775, Plumeria"}></CustomLabel>
-        <CustomLabel title={"Mobile: +919538249333"}></CustomLabel>
+        <CustomLabel title={item.userName}></CustomLabel>
+        <CustomLabel title={item.userAddress}></CustomLabel>
+        <CustomLabel title={item.userMobileNumber}></CustomLabel>
         <View style={styles.orderValue}>
-          <CustomBoldLabel title={"Order Value : 750/-"}></CustomBoldLabel>
+          <CustomBoldLabel title={item.totalPrice}></CustomBoldLabel>
         </View>
         <View>
           <DataTable style={styles.tableContainer}>
@@ -80,13 +66,15 @@ export function SellerOrdersScreen() {
                 <Text style={styles.textStyleHeader}>Cost</Text>
               </DataTable.Title>
             </DataTable.Header>
-            {items.slice(0, items.length).map((item) => (
-              <DataTable.Row key={item.id}>
-                <DataTable.Cell>{item.productName}</DataTable.Cell>
-                <DataTable.Cell>{item.count}</DataTable.Cell>
-                <DataTable.Cell>{item.productPrice}</DataTable.Cell>
-              </DataTable.Row>
-            ))}
+            {item.customerProductOrder
+              .slice(0, item.customerProductOrder.length)
+              .map((tabItem: any) => (
+                <DataTable.Row key={tabItem.id}>
+                  <DataTable.Cell>{tabItem.productName}</DataTable.Cell>
+                  <DataTable.Cell>{tabItem.quantity}</DataTable.Cell>
+                  <DataTable.Cell>{tabItem.productPrice}</DataTable.Cell>
+                </DataTable.Row>
+              ))}
           </DataTable>
         </View>
         <View style={styles.buttonContainer}>
@@ -101,6 +89,19 @@ export function SellerOrdersScreen() {
         </View>
       </View>
     </>
+  );
+  return (
+    <View style={styles.container}>
+      {loading ? (
+        <ActivityIndicator size="large" style={styles.indicator} />
+      ) : (
+        <FlatList
+          data={orderList}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+        />
+      )}
+    </View>
   );
 }
 const styles = StyleSheet.create({
@@ -159,5 +160,11 @@ const styles = StyleSheet.create({
   textStyleHeader: {
     textAlign: "center",
     fontWeight: "900",
+  },
+  container: {
+    flex: 1,
+  },
+  indicator: {
+    flex: 1,
   },
 });

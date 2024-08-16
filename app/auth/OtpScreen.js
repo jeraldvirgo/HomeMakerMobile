@@ -4,7 +4,11 @@ import { CustomButton } from "../../components/CustomButton";
 import { CustomLabel } from "../../components/CustomLabel";
 import { CustomTextbox } from "../../components/CustomTextbox";
 import { CustomAppImage } from "../../components/CustomAppImage";
-import { validateOTP, isExistingUser } from "../network/HttpService";
+import {
+  validateOTP,
+  isExistingUser,
+  getUserType,
+} from "../network/HttpService";
 
 export function OtpScreen({ route, navigation }) {
   const { phoneNumber } = route.params;
@@ -16,14 +20,25 @@ export function OtpScreen({ route, navigation }) {
     const status = await validateOTP(phoneNumber, otp);
     console.log("OTP Verification Status", status);
     if (status) {
+      const userType = await getUserType(phoneNumber);
       const isExtUser = await isExistingUser(phoneNumber);
       console.debug("Existing User", isExtUser);
+      console.debug("User Type", userType);
       setLoading(false);
-      navigation.navigate("Profile", {
-        phoneNumber: phoneNumber,
-        OTP: otp,
-        isExistingUser: isExtUser,
-      });
+      if (userType === "buyer") {
+        navigation.navigate("Profile", {
+          phoneNumber: phoneNumber,
+          OTP: otp,
+          isExistingUser: isExtUser,
+        });
+      }
+      if (userType === "seller") {
+        navigation.navigate("SellerProfile", {
+          phoneNumber: phoneNumber,
+          OTP: otp,
+          isExistingUser: isExtUser,
+        });
+      }
     } else {
       console.error("OTP Verification Failed");
     }

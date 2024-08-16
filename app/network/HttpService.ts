@@ -4,9 +4,10 @@ import { Brand } from "../data/Brand";
 import { storeApplicationInfo } from "../../constants/StoreInfo";
 import { Products } from "../data/Products";
 import { PurchaseHistory } from "../data/PurchaseHistory";
+import { SellerOrder } from "../data/SellerOrder";
 
-const baseUrl = 'https://home-maker-server-ce4c28abfefd.herokuapp.com'
-// const baseUrl =  'http://192.168.0.163:8080'
+// const baseUrl = 'https://home-maker-server-ce4c28abfefd.herokuapp.com'
+const baseUrl =  'http://192.168.0.163:8080'
 
 export const validateOTP = async (mobileNumber: string, otp:string): Promise<boolean> => {
     try {  
@@ -52,8 +53,24 @@ export const isExistingUser = async (mobileNumber: string): Promise<boolean> => 
     }
 
 }
+export const getUserType = async (mobileNumber: string): Promise<string> => {
+    try {  
+         const url = `${baseUrl}/api/user/mobile/usertype/${mobileNumber}`;
+         const { data, status } = await axios.get<string>(url);
+         console.log("getUserType>>>", data)
+        if (status === 200) {
+            if(data != null) {
+               return data
+            }
+        } 
+    } catch(error) {
+        console.debug("Response Error isExistingUser >>", error);
+        return "buyer"
+    }
 
-export const createUser = async (requestPayload: any): Promise<boolean> => {
+}
+
+export const createUser = async (requestPayload: any): Promise<string> => {
     try {  
         const url = `${baseUrl}/api/user/create`;
         const { data, status } = await axios.post<User>(url, requestPayload);
@@ -66,9 +83,40 @@ export const createUser = async (requestPayload: any): Promise<boolean> => {
                 storeApplicationInfo("email",data.email);
                 storeApplicationInfo("avatarUrl",data.avatarUrl);
                 storeApplicationInfo("userId",data.id.toString());
-                return true;
+                return data.id.toString();
             } else {
                  console.debug("Response Error Failed to create User ");
+                 return "";
+            }
+           
+        } else {
+            console.error("Failed to create User");
+        }
+
+    } catch(error) {
+        console.debug("Response Failed to create User >>", error);
+    }
+}
+
+export const createBrand = async (userId: string, requestPayload: any): Promise<boolean> => {
+    try {  
+        const url = `${baseUrl}/api/seller/update/${userId}`;
+        const { data, status } = await axios.post<Brand>(url, requestPayload);
+        if (status === 200) {
+            if(data != null) {
+                console.debug("Response Body Brand Insert Or Update>>", data);
+                storeApplicationInfo("brandId",data.id.toString());
+                storeApplicationInfo("brandName",data.brandName);
+                storeApplicationInfo("brandSubType", data.brandSubType);
+                storeApplicationInfo("brandDescription",data.brandDescription);
+                storeApplicationInfo("brandDescriptionAdditional",data.brandDescriptionAdditional);
+                storeApplicationInfo("brandLocation",data.brandLocation);
+                storeApplicationInfo("brandTimingOpen",data.brandTimingOpen);
+                storeApplicationInfo("brandTimingClose",data.brandTimingClose);
+                storeApplicationInfo("brandImageUrl",data.brandImageUrl);
+                return true;
+            } else {
+                 console.debug("Response Error Failed to createBrand  ");
             }
            
         }
@@ -78,13 +126,14 @@ export const createUser = async (requestPayload: any): Promise<boolean> => {
     }
 }
 
-export const updateUser = async (data: any): Promise<boolean> => {
+export const updateUser = async (data: any): Promise<string> => {
     try {  
         const url = `${baseUrl}/api/user/update/${data.id}`;
         const response = await axios.put(url, data);
         if (response.status === 200) {
             if(data != null) {
                 console.debug("Response Body isExistingUser>>", data);
+                storeApplicationInfo("brandId",data.id);
                 storeApplicationInfo("userName",data.userName);
                 storeApplicationInfo("mobileNumber", data.mobileNumber);
                 storeApplicationInfo("address",data.address);
@@ -92,10 +141,10 @@ export const updateUser = async (data: any): Promise<boolean> => {
                 storeApplicationInfo("avatarUrl",data.avatarUrl);
                 storeApplicationInfo("userId",data.id.toString());
             }
-            return response.data
+            return data.id.toString()
         } else {
             console.debug("Failed to  update User >> : ",data );
-            return false;
+            return "";
         }
 
     } catch(error) {
@@ -133,7 +182,6 @@ export const getAllProducts = async (sellerId: number): Promise<Products[]> => {
         console.debug("Response Error getAllProducts >>", error);
          throw new Error("getAllProducts Error", error)
     }
-
 }
 
 export const placeOrder = async (requestPayload: any): Promise<string> => {
@@ -171,4 +219,37 @@ export const getAllPurchaseHistory = async (userId: number): Promise<PurchaseHis
          throw new Error("PurchaseHistory Error", error)
     }
 
+}
+
+export const getSellerOrderList = async (brandId: number): Promise<SellerOrder[]> => {
+    try {  
+        const url = `${baseUrl}/api/order/seller/orders/${brandId}`;
+         const { data, status } = await axios.get<SellerOrder[]>(url);
+        if (status === 200) {
+            if(data != null) {
+                console.debug("Response Body getSellerOrderList>>", JSON.stringify(data));
+                  return data
+            }
+        } 
+    } catch(error) {
+        console.debug("Response Error getSellerOrderList >>", error);
+         throw new Error("getSellerOrderList Error", error)
+    }
+
+}
+
+export const createProduct = async (product: Products): Promise<boolean> => {
+    try {  
+        const url = `${baseUrl}/api/seller/product/create`;
+        const response = await axios.post(url, product);
+        if (response.status === 200) {
+            console.debug("Create Product  >> : ",response.data )
+            return response.data
+        } else {
+            throw new Error("Failed to Create Product");
+        }
+
+    } catch(error) {
+        console.error("Response Error Create Product >>", error);
+    }
 }

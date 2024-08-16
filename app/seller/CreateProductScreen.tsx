@@ -15,8 +15,18 @@ import {
   CapturePreviewImage,
   CustomAppImage,
 } from "../../components/CustomAppImage";
+import { getApplicationInfo } from "../../constants/StoreInfo";
+import { Products } from "../data/Products";
+import { createProduct } from "../network/HttpService";
 
 export function CreateProductScreen({ route, navigation }) {
+  const [brandId, setBrandId] = React.useState("");
+  const [productName, setProductName] = React.useState("");
+  const [productDescription, setProductDescription] = React.useState("");
+  const [productAdditionalDescription, setProductAdditionalDescription] =
+    React.useState("");
+  const [productPrice, setProductPrice] = React.useState("");
+
   let imageUriLocal = "";
   try {
     const { imageUri } = route.params;
@@ -26,10 +36,33 @@ export function CreateProductScreen({ route, navigation }) {
     // console.log("Error On Load: ", e);
   }
 
-  const [productName, setProductName] = React.useState("");
+  React.useEffect(() => {
+    async function loadInfo() {
+      console.debug("Loading BrandIfo", await getApplicationInfo("brandId"));
+      setBrandId(await getApplicationInfo("brandId"));
+      console.debug("Loading BrandIfo", brandId);
+    }
+    loadInfo();
+  }, []);
 
-  const handleSubmit = async () => {
+  const handleCamera = async () => {
     navigation.navigate("CameraViewScreen");
+  };
+  const handleAddProduct = async () => {
+    const updateUserData: Products = {
+      brandId: Number(brandId),
+      productName: productName,
+      productDescription: productName,
+      productDescriptionAdditional: productAdditionalDescription,
+      productPrice: Number(productPrice),
+      type: isEnabled ? "Non-Veg" : "Veg",
+      productImageUrl:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0GXIb59Wp5ZqKvZiaH0xDF6PgVOzR4yWGMFnmudskHQ&s",
+    };
+    console.log("Create Product Info ", updateUserData);
+    let prod = createProduct(updateUserData);
+    console.debug("Product Created", prod);
+    navigation.pop();
   };
   const [isEnabled, setIsEnabled] = React.useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
@@ -45,7 +78,7 @@ export function CreateProductScreen({ route, navigation }) {
           }}
         ></View>
         <TouchableOpacity
-          onPress={handleSubmit}
+          onPress={handleCamera}
           style={{
             flexDirection: "row",
             alignItems: "center",
@@ -64,26 +97,26 @@ export function CreateProductScreen({ route, navigation }) {
         <CustomTextbox
           title={"Product Description"}
           type="default"
-          onChangeText={setProductName}
+          onChangeText={setProductDescription}
         ></CustomTextbox>
         <CustomLabel title={"Product Additional Description"} />
         <CustomTextbox
           title={"Product Additional Description"}
           type="default"
-          onChangeText={setProductName}
+          onChangeText={setProductAdditionalDescription}
         ></CustomTextbox>
         <CustomLabel title={"Product Price"} />
         <CustomTextbox
           title={"Price"}
           type="number-pad"
-          onChangeText={setProductName}
+          onChangeText={setProductPrice}
         ></CustomTextbox>
         <CustomSwitch
           onValueChange={toggleSwitch}
           value={isEnabled}
           colorValue={isEnabled}
         ></CustomSwitch>
-        <CustomButton onPress={handleSubmit} title={"Add Product"} />
+        <CustomButton onPress={handleAddProduct} title={"Add Product"} />
       </View>
     </ScrollView>
   );

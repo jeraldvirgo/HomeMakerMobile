@@ -1,9 +1,10 @@
     export interface Products {
-        id: number;
+        id?: number;
         brandId: number;
-        productName: String;
+        productName: string;
         productPrice: number;
-        productDescription: String;
-        productDescriptionAdditional: String;
-        productImageUrl: String;
+        productDescription: string;
+        productDescriptionAdditional: string;
+        type:string;
+        productImageUrl: string;
     }
