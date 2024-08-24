@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 0.5,
     marginTop: 8,
+    margin: 8,
   },
   cardRight: {
     alignItems: "stretch",
@@ -99,7 +100,7 @@ const styles = StyleSheet.create({
     height: 99,
     margin: 8,
     borderRadius: 8,
-    borderWidth: 1,
+    // borderWidth: 1,
     borderColor: COLORS.TEXTBOX_BORDER,
   },
   indicator: {

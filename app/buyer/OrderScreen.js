@@ -10,7 +10,7 @@ export function OrderScreen({ route, navigation }) {
   const [phoneNumber, setPhoneNumber] = React.useState();
   const [address, setAddress] = React.useState();
   const [totalCost, setTotalCost] = React.useState(0);
-  const { order, brandId } = route.params;
+  const { order, brandId, products } = route.params;
 
   const onPress = async () => {
     console.log("Place Order>>>>");
@@ -35,11 +35,13 @@ export function OrderScreen({ route, navigation }) {
   console.log("Brand Id", brandId);
 
   function getOrderNameCost(orderId) {
-    for (i = 0; i < sellerProductList.length; i++) {
-      if (sellerProductList[i].id == orderId) {
-        return sellerProductList[i];
+    console.log("products >>>>>", products);
+    for (i = 0; i < products.length; i++) {
+      if (products[i].id == orderId) {
+        return products[i];
       }
     }
+    return null;
   }
   let orderDetail = [];
   let totalCostOfPurchase = 0;
@@ -47,6 +49,10 @@ export function OrderScreen({ route, navigation }) {
   React.useEffect(() => {
     for (i = 0; i < order.orders.length; i++) {
       let productSelected = getOrderNameCost(order.orders[i].productId);
+      console.log("productSelected>>>>", productSelected);
+      if (productSelected == null) {
+        break;
+      }
       productSelected.count = order.orders[i].quantity;
       orderDetail.push(productSelected);
       totalCostOfPurchase =

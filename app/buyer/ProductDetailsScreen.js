@@ -40,7 +40,11 @@ export function ProductDetailsScreen({ route, navigation }) {
     });
     let ordersString = { orders };
     console.log("Sending Payload : ", ordersString);
-    navigation.navigate("Order", { order: ordersString, brandId: id });
+    navigation.navigate("Order", {
+      order: ordersString,
+      brandId: id,
+      products: productList,
+    });
   };
 
   const onPressIncrement = (id, productCost) => {
@@ -148,6 +152,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 0.5,
     marginTop: 8,
+    margin: 8,
   },
   cardContentContainer: {
     alignItems: "stretch",

@@ -10,7 +10,7 @@ export const CustomSwitch = (props) => {
         onValueChange={props.onValueChange}
         value={props.value}
       />
-      <Text style={styles.textStyle}>Veg/Non-Veg</Text>
+      <Text style={styles.textStyle}>{props.title}</Text>
     </View>
   );
 };

@@ -3,5 +3,6 @@ export const COLORS = {
     BUTTON :"#01B409",
     VEG :"#01B409",
     NON_VEG :"#FB1010",
-    WHITE_BUTTON: "F5F2F2"
+    WHITE_BUTTON: "F5F2F2",
+    PREPARE_BUTTON : "#015EB4"
 }

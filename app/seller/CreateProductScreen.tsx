@@ -1,20 +1,10 @@
-import {
-  View,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  Text,
-  Button,
-} from "react-native";
-import React, { useEffect, useRef } from "react";
+import { View, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
+import React from "react";
 import { CustomLabel } from "../../components/CustomLabel";
 import { CustomTextbox } from "../../components/CustomTextbox";
 import { CustomButton } from "../../components/CustomButton";
 import { CustomSwitch } from "../../components/CustomSwitch";
-import {
-  CapturePreviewImage,
-  CustomAppImage,
-} from "../../components/CustomAppImage";
+import { CapturePreviewImage } from "../../components/CustomAppImage";
 import { getApplicationInfo } from "../../constants/StoreInfo";
 import { Products } from "../data/Products";
 import { createProduct } from "../network/HttpService";
@@ -115,6 +105,7 @@ export function CreateProductScreen({ route, navigation }) {
           onValueChange={toggleSwitch}
           value={isEnabled}
           colorValue={isEnabled}
+          title="Veg/Non-Veg"
         ></CustomSwitch>
         <CustomButton onPress={handleAddProduct} title={"Add Product"} />
       </View>

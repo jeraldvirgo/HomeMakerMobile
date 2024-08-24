@@ -5,13 +5,16 @@ export const CustomButton = (props) => {
   return (
     <View>
       <TouchableOpacity style={styles.button} onPress={props.onPress}>
-        <Text>{props.title}</Text>
+        <Text style={styles.text}>{props.title}</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  text: {
+    color: "white",
+  },
   button: {
     alignItems: "center",
     backgroundColor: COLORS.BUTTON,

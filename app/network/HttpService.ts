@@ -100,7 +100,9 @@ export const createUser = async (requestPayload: any): Promise<string> => {
 
 export const createBrand = async (userId: string, requestPayload: any): Promise<boolean> => {
     try {  
+        console.log("Creating Brand for User Info",requestPayload)
         const url = `${baseUrl}/api/seller/update/${userId}`;
+         console.log("Creating Brand for User Url",url)
         const { data, status } = await axios.post<Brand>(url, requestPayload);
         if (status === 200) {
             if(data != null) {

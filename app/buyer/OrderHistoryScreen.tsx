@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import React from "react";
 
-import { CustomLabel } from "../../components/CustomLabel";
+import { CustomBoldLabel, CustomLabel } from "../../components/CustomLabel";
 import { getApplicationInfo } from "../../constants/StoreInfo";
 import { getAllPurchaseHistory } from "../network/HttpService";
 import { ProfileInfo } from "../../components/ProfileInfo";
@@ -76,6 +76,13 @@ export function OrderHistoryScreen({ route, navigation }) {
         <View style={styles.profile}>
           <Text style={styles.title}>{userName}</Text>
           <Text style={styles.subTitle}>{address}</Text>
+          <Text style={styles.subTitle}>{phoneNumber}</Text>
+        </View>
+        <View>
+          <CustomBoldLabel
+            style={styles.subTitle}
+            title="Your Order History"
+          ></CustomBoldLabel>
         </View>
       </View>
       <FlatList
@@ -102,7 +109,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 0.5,
     marginTop: 5,
-    padding: 10,
+    margin: 5,
   },
   col: {
     flexDirection: "column",
@@ -112,6 +119,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     padding: 10,
     width: "90%",
+    alignItems: "center",
   },
   cardRight: {
     alignItems: "stretch",
@@ -120,9 +128,9 @@ const styles = StyleSheet.create({
   image: {
     width: 106,
     height: 99,
-    margin: 5,
+    margin: 8,
     borderRadius: 8,
-    borderWidth: 1,
+    // borderWidth: 1,
     borderColor: COLORS.TEXTBOX_BORDER,
   },
   indicator: {
@@ -133,11 +141,10 @@ const styles = StyleSheet.create({
     fontWeight: "300",
   },
   profileCard: {
-    flexDirection: "row",
+    flexDirection: "column",
     borderRadius: 8,
-    borderWidth: 0.5,
-    marginTop: 5,
+    marginBottom: 1,
     padding: 10,
-    backgroundColor: COLORS.TEXTBOX_BORDER,
+    alignItems: "center",
   },
 });

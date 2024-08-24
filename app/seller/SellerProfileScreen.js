@@ -20,7 +20,7 @@ export function SellerProfileScreen({ route, navigation }) {
   const [userBrandDescription, setUserBrandDescription] = React.useState("");
   const [address, setAddress] = React.useState("");
   const [userId, setUserId] = React.useState("");
-
+  let createdUserId = "";
   React.useEffect(() => {
     async function getProfileInfo() {
       setUserName(await getApplicationInfo("userName"));
@@ -39,7 +39,7 @@ export function SellerProfileScreen({ route, navigation }) {
     try {
       if (isExistingUser) {
         const updateUserData = {
-          id: userId,
+          id: createdUserId,
           userName: userName,
           mobileNumber: phoneNumber,
           address: address,
@@ -47,8 +47,7 @@ export function SellerProfileScreen({ route, navigation }) {
           avatarUrl: "Someurl",
         };
         console.debug("updateUserData", updateUserData);
-        const userId = await updateUser(updateUserData);
-        setUserId(userId);
+        createdUserId = await updateUser(updateUserData);
       } else {
         const createUserData = {
           userName: userName,
@@ -58,12 +57,11 @@ export function SellerProfileScreen({ route, navigation }) {
           avatarUrl: "Someurl",
         };
         console.debug("createUserData", createUserData);
-        const userId = await createUser(createUserData);
-        setUserId(userId);
+        createdUserId = await createUser(createUserData);
       }
 
       const createBrandData = {
-        userId: userId,
+        userId: createdUserId,
         brandName: userBrandName,
         brandImageUrl:
           "https://cdn3.vectorstock.com/i/1000x1000/78/67/home-food-symbol-vector-1957867.jpg",
@@ -74,8 +72,11 @@ export function SellerProfileScreen({ route, navigation }) {
         brandTimingOpen: "00.00",
         brandTimingClose: "00.00",
       };
-      const createBrandResponse = await createBrand(userId, createBrandData);
-      await storeApplicationInfo("userId", userName);
+      const createBrandResponse = await createBrand(
+        createdUserId,
+        createBrandData
+      );
+      await storeApplicationInfo("userId", createdUserId);
       await storeApplicationInfo("userName", userName);
       await storeApplicationInfo("phoneNumber", phoneNumber);
       await storeApplicationInfo("address", address);

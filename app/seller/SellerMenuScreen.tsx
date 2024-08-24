@@ -13,6 +13,11 @@ import { getApplicationInfo } from "../../constants/StoreInfo";
 import { getAllProducts } from "../network/HttpService";
 import { COLORS } from "../../constants/Colors";
 import { useFocusEffect } from "@react-navigation/native";
+import {
+  CustomBoldLabel,
+  CustomBoldStockLable,
+} from "../../components/CustomLabel";
+import { CustomSwitch } from "../../components/CustomSwitch";
 
 export function SellerMenuScreen({ navigation }) {
   const [brandId, setBrandId] = React.useState(null);
@@ -20,6 +25,8 @@ export function SellerMenuScreen({ navigation }) {
   const [loading, setLoading] = React.useState(true);
   const [selectedId, setSelectedId] = React.useState(null);
   let brandID: string;
+  const [isEnabled, setIsEnabled] = React.useState(false);
+  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
   React.useEffect(() => {
     async function loadInfo() {
       brandID = await getApplicationInfo("brandId");
@@ -34,10 +41,7 @@ export function SellerMenuScreen({ navigation }) {
     React.useCallback(() => {
       async function loadInfo() {
         this.setTimeout(async () => {
-          console.debug("<<<<<<Reloading Product on focus changed>>>>>>>");
-          brandID = await getApplicationInfo("brandId");
-          setBrandId(brandID);
-          console.debug("Loading BrandIfo", brandID);
+          console.debug("SellerMenuScreen BrandIfo", brandID);
           setProductList(await getAllProducts(Number(brandID)));
           setLoading(false);
         }, 1000);
@@ -67,6 +71,7 @@ export function SellerMenuScreen({ navigation }) {
           resizeMode="cover"
         />
         <View style={styles.cardRight}>
+          <Text></Text>
           <View style={styles.foodType}>
             <View style={styles.CircleShape} />
             <Text style={styles.title}>{item.productName} </Text>
@@ -74,13 +79,20 @@ export function SellerMenuScreen({ navigation }) {
 
           <Text style={styles.subTitle}> {item.type}</Text>
           <Text style={styles.subTitle}>
-            {" "}
             {item.productDescriptionAdditional}
           </Text>
-          {/* <Text>
-            {" "}
-            Time: {item.brandTimingOpen} - {item.brandTimingClose}{" "}
-          </Text> */}
+          <Text></Text>
+          <View style={styles.stockPriceContainer}>
+            <CustomBoldStockLable
+              title={"₹" + item.productPrice}
+            ></CustomBoldStockLable>
+            <CustomSwitch
+              onValueChange={toggleSwitch}
+              value={isEnabled}
+              colorValue={isEnabled}
+              title="In Stock"
+            ></CustomSwitch>
+          </View>
         </View>
       </View>
     </TouchableOpacity>
@@ -95,13 +107,33 @@ export function SellerMenuScreen({ navigation }) {
       {loading ? (
         <ActivityIndicator size="large" style={styles.indicator} />
       ) : (
-        <View>
-          <CustomButton onPress={handleAddProduct} title={"Add Product"} />
+        <View style={styles.listview}>
           <FlatList
             data={productList}
             keyExtractor={(item) => item.id.toString()}
             renderItem={renderItem}
           />
+          <TouchableOpacity
+            onPress={handleAddProduct}
+            style={{
+              borderWidth: 3,
+              borderColor: COLORS.BUTTON,
+              alignItems: "center",
+              justifyContent: "center",
+              width: 50,
+              position: "absolute",
+              bottom: 10,
+              right: 10,
+              height: 50,
+              backgroundColor: COLORS.BUTTON,
+              borderRadius: 100,
+            }}
+          >
+            <Image
+              source={require("../../assets/add_icon.png")}
+              style={styles.imageSize}
+            />
+          </TouchableOpacity>
         </View>
       )}
     </View>
@@ -116,6 +148,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 0.5,
     marginTop: 8,
+    marginHorizontal: 5,
   },
   image: {
     width: 106,
@@ -151,5 +184,15 @@ const styles = StyleSheet.create({
   },
   indicator: {
     flex: 1,
+  },
+  imageSize: { width: 30, height: 30 },
+  listview: {
+    height: "100%",
+  },
+  stockPriceContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    borderColor: COLORS.BUTTON,
+    borderTopWidth: 0.5,
   },
 });

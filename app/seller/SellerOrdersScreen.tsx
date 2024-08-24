@@ -5,20 +5,28 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   FlatList,
+  Image,
 } from "react-native";
 import React from "react";
 import { COLORS } from "../../constants/Colors";
 import { CustomBoldLabel, CustomLabel } from "../../components/CustomLabel";
 import { DataTable } from "react-native-paper";
 import { getSellerOrderList } from "../network/HttpService";
+import { useFocusEffect } from "@react-navigation/native";
+import { getApplicationInfo } from "../../constants/StoreInfo";
+import Icon from "react-native-vector-icons/Ionicons";
 
 export function SellerOrdersScreen() {
+  let brandID: string;
   const [orderList, setOrderList] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
+  const [brandId, setBrandId] = React.useState(null);
   React.useEffect(() => {
     const loadOrderList = async () => {
       try {
-        setOrderList(await getSellerOrderList(1));
+        brandID = await getApplicationInfo("brandId");
+        setBrandId(brandID);
+        setOrderList(await getSellerOrderList(Number(brandID)));
         setLoading(false);
       } catch (error) {
         console.debug("Error from AsyncStorage", error);
@@ -26,32 +34,28 @@ export function SellerOrdersScreen() {
     };
     loadOrderList();
   }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      async function loadInfo() {
+        this.setTimeout(async () => {
+          console.debug("<<<<<<Reloading Product on focus changed>>>>>>>");
+          console.debug("Loading BrandIfo", brandID);
+          setOrderList(await getSellerOrderList(Number(brandID)));
+          setLoading(false);
+        }, 1000);
+      }
+      loadInfo();
+    }, [])
+  );
 
   const renderItem = ({ item, index }) => (
     <>
-      {/* <View style={styles.buttonContainer}>
-        <View>
-          <TouchableOpacity style={styles.button}>
-            <Text>{"Orders"}</Text>
-          </TouchableOpacity>
-        </View>
-        <View>
-          <TouchableOpacity style={styles.button}>
-            <Text>{"Ready"}</Text>
-          </TouchableOpacity>
-        </View>
-        <View>
-          <TouchableOpacity style={styles.button}>
-            <Text>{"Delivered"}</Text>
-          </TouchableOpacity>
-        </View>
-      </View> */}
       <View style={styles.card}>
+        <CustomBoldLabel title={item.userMobileNumber}></CustomBoldLabel>
         <CustomLabel title={item.userName}></CustomLabel>
         <CustomLabel title={item.userAddress}></CustomLabel>
-        <CustomLabel title={item.userMobileNumber}></CustomLabel>
         <View style={styles.orderValue}>
-          <CustomBoldLabel title={item.totalPrice}></CustomBoldLabel>
+          <CustomBoldLabel title={" ₹ " + item.totalPrice}></CustomBoldLabel>
         </View>
         <View>
           <DataTable style={styles.tableContainer}>
@@ -78,12 +82,12 @@ export function SellerOrdersScreen() {
           </DataTable>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.processButton}>
-            <Text>{"Prepare"}</Text>
+          <TouchableOpacity style={styles.prepareButton}>
+            <Text style={styles.text}>{"Prepare"}</Text>
           </TouchableOpacity>
           <View>
-            <TouchableOpacity style={styles.processButton}>
-              <Text>{"Done"}</Text>
+            <TouchableOpacity style={styles.doneButton}>
+              <Text style={styles.text}>{"Done"}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -95,11 +99,28 @@ export function SellerOrdersScreen() {
       {loading ? (
         <ActivityIndicator size="large" style={styles.indicator} />
       ) : (
-        <FlatList
-          data={orderList}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderItem}
-        />
+        <View style={styles.container}>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button}>
+              <Text>{"Orders"}</Text>
+            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.button}>
+                <Text>{"Ready"}</Text>
+              </TouchableOpacity>
+            </View>
+            <View>
+              <TouchableOpacity style={styles.button}>
+                <Text>{"Delivered"}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <FlatList
+            data={orderList}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderItem}
+          />
+        </View>
       )}
     </View>
   );
@@ -112,13 +133,11 @@ const styles = StyleSheet.create({
   },
   button: {
     alignItems: "center",
-    fontWeight: "bold",
+    fontWeight: "900",
     padding: 10,
     margin: 3,
     paddingLeft: 5,
     minWidth: "31.5%",
-    // borderBottomWidth: 2,
-    // borderColor: COLORS.BUTTON,
     elevation: 1,
   },
   cardContainer: {
@@ -130,17 +149,27 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "column",
     backgroundColor: "#fbfbfb",
-    borderWidth: 4,
+    borderWidth: 2,
     borderColor: "#DCDCDC",
-    padding: 10,
     borderRadius: 10,
-    marginBottom: 10,
-    elevation: 2,
+    padding: 10,
+    marginHorizontal: 5,
+    marginBottom: 5,
   },
   orderValue: {
     flexDirection: "row-reverse",
   },
-  processButton: {
+  prepareButton: {
+    alignItems: "center",
+    backgroundColor: COLORS.PREPARE_BUTTON,
+    padding: 10,
+    borderRadius: 30,
+    fontWeight: "normal",
+    fontSize: 20,
+    margin: 10,
+    minWidth: "45%",
+  },
+  doneButton: {
     alignItems: "center",
     backgroundColor: COLORS.BUTTON,
     padding: 10,
@@ -159,12 +188,16 @@ const styles = StyleSheet.create({
   },
   textStyleHeader: {
     textAlign: "center",
-    fontWeight: "900",
+    fontWeight: "bold",
+    color: "black",
   },
   container: {
     flex: 1,
   },
   indicator: {
     flex: 1,
+  },
+  text: {
+    color: "white",
   },
 });
