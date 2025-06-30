@@ -7,7 +7,7 @@ import { PurchaseHistory } from "../data/PurchaseHistory";
 import { SellerOrder } from "../data/SellerOrder";
 
 // const baseUrl = 'https://home-maker-server-ce4c28abfefd.herokuapp.com'
-const baseUrl =  'http://192.168.0.163:8080'
+const baseUrl =  'http://10.46.198.49:8080'
 
 export const validateOTP = async (mobileNumber: string, otp:string): Promise<boolean> => {
     try {  
@@ -42,6 +42,7 @@ export const isExistingUser = async (mobileNumber: string): Promise<boolean> => 
                 storeApplicationInfo("email",data.email);
                 storeApplicationInfo("avatarUrl",data.avatarUrl);
                 storeApplicationInfo("userId",data.id.toString());
+                storeApplicationInfo("upiId",data.upiId);
             }
             return true;
         } else {
@@ -82,6 +83,7 @@ export const createUser = async (requestPayload: any): Promise<string> => {
                 storeApplicationInfo("address",data.address);
                 storeApplicationInfo("email",data.email);
                 storeApplicationInfo("avatarUrl",data.avatarUrl);
+                storeApplicationInfo("upiId",data.upiId);
                 storeApplicationInfo("userId",data.id.toString());
                 return data.id.toString();
             } else {

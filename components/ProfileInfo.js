@@ -6,7 +6,7 @@ export const ProfileInfo = (props) => {
   return (
     <Image
       style={styles.image}
-      source={require("../assets/user.png")}
+      source={{ uri: props.avatarImageUrl }}
       resizeMode={"cover"}
     />
   );
@@ -37,5 +37,6 @@ const styles = StyleSheet.create({
     borderColor: COLORS.TEXTBOX_BORDER,
     borderRadius: 75,
     borderWidth: 1,
+    resizeMode: "contain",
   },
 });

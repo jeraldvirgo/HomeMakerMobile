@@ -20,6 +20,11 @@ export function SellerProfileScreen({ route, navigation }) {
   const [userBrandDescription, setUserBrandDescription] = React.useState("");
   const [address, setAddress] = React.useState("");
   const [userId, setUserId] = React.useState("");
+  const [emailId, setEmailId] = React.useState("");
+  const [upiId, setUpiId] = React.useState("");
+  const [avatarUrl, setAvatarUrl] = React.useState(
+    "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
+  );
   let createdUserId = "";
   React.useEffect(() => {
     async function getProfileInfo() {
@@ -28,6 +33,9 @@ export function SellerProfileScreen({ route, navigation }) {
       setUserId(await getApplicationInfo("userId"));
       setUserBrandName(await getApplicationInfo("userBrandName"));
       setUserBrandDescription(await getApplicationInfo("userBrandDescription"));
+      setEmailId(await getApplicationInfo("emailId"));
+      setUpiId(await getApplicationInfo("upiId"));
+      setAvatarUrl(await getApplicationInfo("avatarUrl"));
     }
     if (isExistingUser) {
       console.debug("Is an Existing User !!!");
@@ -43,8 +51,9 @@ export function SellerProfileScreen({ route, navigation }) {
           userName: userName,
           mobileNumber: phoneNumber,
           address: address,
-          email: "dummy@gmail.com",
-          avatarUrl: "Someurl",
+          email: emailId,
+          avatarUrl: avatarUrl,
+          upiId: upiId,
         };
         console.debug("updateUserData", updateUserData);
         createdUserId = await updateUser(updateUserData);
@@ -53,8 +62,9 @@ export function SellerProfileScreen({ route, navigation }) {
           userName: userName,
           mobileNumber: phoneNumber,
           address: address,
-          email: "dummy@gmail.com",
-          avatarUrl: "Someurl",
+          email: emailId,
+          avatarUrl: avatarUrl,
+          upiId: upiId,
         };
         console.debug("createUserData", createUserData);
         createdUserId = await createUser(createUserData);
@@ -82,6 +92,10 @@ export function SellerProfileScreen({ route, navigation }) {
       await storeApplicationInfo("address", address);
       await storeApplicationInfo("userBrandName", userBrandName);
       await storeApplicationInfo("userBrandDescription", userBrandDescription);
+      await storeApplicationInfo("emailId", emailId);
+      await storeApplicationInfo("avatarUrl", avatarUrl);
+      await storeApplicationInfo("upiId", upiId);
+
       DeviceEventEmitter.emit("event.login", "true");
       DeviceEventEmitter.emit("event.userType", "seller");
     } catch (error) {
@@ -108,6 +122,14 @@ export function SellerProfileScreen({ route, navigation }) {
         onChangeText={setUserBrandName}
       ></CustomTextbox>
 
+      <CustomLabel title={"Email Id"} />
+      <CustomTextbox
+        title={"Email Id"}
+        type="default"
+        value={emailId}
+        onChangeText={setEmailId}
+      ></CustomTextbox>
+
       <CustomLabel title={"Store Description"} />
       <CustomTextboxMultiLine
         title={"Store Description"}
@@ -121,6 +143,13 @@ export function SellerProfileScreen({ route, navigation }) {
         value={address}
         onChangeText={setAddress}
       ></CustomTextboxMultiLine>
+      <CustomLabel title={"Payment UPI ID"} />
+      <CustomTextbox
+        title={"UPI ID"}
+        type="default"
+        value={upiId}
+        onChangeText={setUpiId}
+      ></CustomTextbox>
       <CustomButton onPress={handleSubmit} title={"Done"} />
     </ScrollView>
   );

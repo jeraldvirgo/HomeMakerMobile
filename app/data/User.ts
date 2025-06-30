@@ -5,5 +5,6 @@ export interface User {
     address: string;
     email: string;
     avatarUrl: string;
-    userType: string
+    userType: string;
+    upiId: string;
 }

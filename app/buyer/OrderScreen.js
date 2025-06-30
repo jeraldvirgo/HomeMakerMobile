@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Modal,
+  Button,
+} from "react-native";
 import { DataTable } from "react-native-paper";
 import { sellerProductList } from "../../constants/Application";
 import * as React from "react";
@@ -10,10 +17,10 @@ export function OrderScreen({ route, navigation }) {
   const [phoneNumber, setPhoneNumber] = React.useState();
   const [address, setAddress] = React.useState();
   const [totalCost, setTotalCost] = React.useState(0);
+  const [modalVisible, setModalVisible] = React.useState(false);
   const { order, brandId, products } = route.params;
 
   const onPress = async () => {
-    console.log("Place Order>>>>");
     var data = {
       userId: await getApplicationInfo("userId"),
       brandId: brandId,
@@ -21,6 +28,15 @@ export function OrderScreen({ route, navigation }) {
     };
     console.debug("data>>>", data);
     placeOrder(data);
+    setModalVisible(true);
+    // navigation.navigate("Resturants");
+  };
+  const gpayPay = async () => {
+    setModalVisible(false);
+    navigation.navigate("UPI");
+  };
+  const payLater = async () => {
+    setModalVisible(false);
     navigation.navigate("Resturants");
   };
   React.useEffect(() => {
@@ -99,6 +115,30 @@ export function OrderScreen({ route, navigation }) {
           <Text>Place Order </Text>
         </TouchableOpacity>
       </View>
+      <View style={styles.container}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Order Place Make Payment</Text>
+              <View>
+                <TouchableOpacity style={styles.button} onPress={gpayPay}>
+                  <Text>Pay Using Gpay</Text>
+                </TouchableOpacity>
+              </View>
+              <View>
+                <TouchableOpacity style={styles.button} onPress={payLater}>
+                  <Text> Pay Later </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </View>
     </View>
   );
 }
@@ -135,5 +175,28 @@ const styles = StyleSheet.create({
     fontWeight: "normal",
     margin: 20,
     fontSize: 20,
+  },
+  modalView: {
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
   },
 });

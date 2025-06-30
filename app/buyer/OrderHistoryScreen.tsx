@@ -20,6 +20,9 @@ export function OrderHistoryScreen({ route, navigation }) {
   const [phoneNumber, setPhoneNumber] = React.useState("");
   const [orderList, setOrderList] = React.useState(null);
   const [selectedId, setSelectedId] = React.useState(null);
+  const [avatarUrl, setAvatarUrl] = React.useState(
+    "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
+  );
 
   React.useEffect(() => {
     const loadStoredInfo = async () => {
@@ -27,12 +30,14 @@ export function OrderHistoryScreen({ route, navigation }) {
         setUserName(await getApplicationInfo("userName"));
         setPhoneNumber(await getApplicationInfo("phoneNumber"));
         setAddress(await getApplicationInfo("address"));
+        setAvatarUrl(await getApplicationInfo("avatarUrl"));
         setOrderList(
           await getAllPurchaseHistory(
             Number(await getApplicationInfo("userId"))
           )
         );
         console.log("userName", userName);
+        console.log("AvatarUrl", avatarUrl);
       } catch (error) {
         console.debug("Error from AsyncStorage", error);
       }
@@ -72,7 +77,7 @@ export function OrderHistoryScreen({ route, navigation }) {
   return (
     <View style={styles.col}>
       <View style={styles.profileCard}>
-        <ProfileInfo />
+        <ProfileInfo avatarImageUrl={avatarUrl} />
         <View style={styles.profile}>
           <Text style={styles.title}>{userName}</Text>
           <Text style={styles.subTitle}>{address}</Text>

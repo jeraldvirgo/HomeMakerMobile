@@ -6,6 +6,7 @@ import { ProfileScreen } from "./app/auth/ProfileScreen";
 import { SellerProfileScreen } from "./app/seller/SellerProfileScreen";
 import { OrderScreen } from "./app/buyer/OrderScreen";
 import { ProductDetailsScreen } from "./app/buyer/ProductDetailsScreen";
+import { HomeScreen } from "./app/buyer/HomeScreen";
 import { ProductListScreen } from "./app/buyer/ProductListScreen";
 import { OrderHistoryScreen } from "./app/buyer/OrderHistoryScreen";
 import { SplashScreen } from "./app/SplashScreen";
@@ -181,6 +182,7 @@ export default function App() {
               })}
             />
             <Stack.Screen name="Food" component={ProductDetailsScreen} />
+            <Stack.Screen name="UPI" component={HomeScreen} />
             <Stack.Screen
               name="ProductDetailsScreen"
               component={ProductDetailsScreen}
