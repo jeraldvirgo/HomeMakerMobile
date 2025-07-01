@@ -7,7 +7,7 @@ import { PurchaseHistory } from "../data/PurchaseHistory";
 import { SellerOrder } from "../data/SellerOrder";
 
 // const baseUrl = 'https://home-maker-server-ce4c28abfefd.herokuapp.com'
-const baseUrl =  'http://10.46.198.49:8080'
+const baseUrl =  'http://10.16.52.86:8080'
 
 export const validateOTP = async (mobileNumber: string, otp:string): Promise<boolean> => {
     try {  
