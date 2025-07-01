@@ -9,6 +9,8 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo/config": "^8.1.1",
+    "@expo/metro-config": "^0.10.0",
     "@expo/vector-icons": "^14.0.2",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/netinfo": "11.3.1",
@@ -25,6 +27,7 @@
     "expo": "~51.0.39",
     "expo-asset": "^10.0.10",
     "expo-camera": "~15.0.16",
+    "expo-cli": "^3.27.14",
     "expo-constants": "~16.0.2",
     "expo-dev-client": "~4.0.29",
     "expo-font": "^12.0.9",
