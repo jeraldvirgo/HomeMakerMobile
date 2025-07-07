@@ -16,3 +16,9 @@ export interface CustomerProductOrder {
     productPrice: string;
     quantity: number;
 }
+export interface PastOrder {
+    productName: string;
+    productPrice: string;
+    quantity: string;
+    total: string
+}

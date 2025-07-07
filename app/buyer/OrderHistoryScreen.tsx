@@ -10,7 +10,10 @@ import React from "react";
 
 import { CustomBoldLabel, CustomLabel } from "../../components/CustomLabel";
 import { getApplicationInfo } from "../../constants/StoreInfo";
-import { getAllPurchaseHistory } from "../network/HttpService";
+import {
+  getAllPurchaseHistory,
+  getPastOrdersByOderId,
+} from "../network/HttpService";
 import { ProfileInfo } from "../../components/ProfileInfo";
 import { COLORS } from "../../constants/Colors";
 
@@ -47,8 +50,9 @@ export function OrderHistoryScreen({ route, navigation }) {
 
   const handleItemPress = (id: any) => {
     setSelectedId(id);
-    console.debug("Item Selected", id);
-    // navigation.navigate("Food", { id: id });
+    console.debug("Order Id Selected ", id);
+    navigation.navigate("PastOrders", { id: id });
+    getPastOrdersByOderId(id);
   };
 
   const renderItem = ({ item, index }) => (

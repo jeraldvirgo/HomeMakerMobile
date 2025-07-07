@@ -3,11 +3,11 @@ import { User } from "../data/User";
 import { Brand } from "../data/Brand";
 import { storeApplicationInfo } from "../../constants/StoreInfo";
 import { Products } from "../data/Products";
-import { PurchaseHistory } from "../data/PurchaseHistory";
+import { PastOrder, PurchaseHistory } from "../data/PurchaseHistory";
 import { SellerOrder } from "../data/SellerOrder";
 
 // const baseUrl = 'https://home-maker-server-ce4c28abfefd.herokuapp.com'
-const baseUrl =  'http://10.16.52.86:8080'
+const baseUrl =  'http://10.16.52.64:8080'
 
 export const validateOTP = async (mobileNumber: string, otp:string): Promise<boolean> => {
     try {  
@@ -255,5 +255,21 @@ export const createProduct = async (product: Products): Promise<boolean> => {
 
     } catch(error) {
         console.error("Response Error Create Product >>", error);
+    }
+}
+
+export const getPastOrdersByOderId = async (orderId: string) => {
+    try {
+        console.debug("Call with Order Id >>", orderId);
+        const url = `${baseUrl}/api/order/seller/past/orders/${orderId}`;
+        const { data, status } = await axios.get<PastOrder[]>(url);
+
+        if (status === 200 && data != null) {
+            console.debug("Response Past Orders >>", data);
+            return data;
+        }
+    } catch (error) {
+        console.debug("Response Error Response PastOrders >>", error);
+        throw new Error(`PastOrders Error: ${error instanceof Error ? error.message : String(error)}`);
     }
 }

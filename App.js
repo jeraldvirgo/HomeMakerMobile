@@ -31,6 +31,7 @@ import { CreateProductScreen } from "./app/seller/CreateProductScreen";
 import { CameraViewScreen } from "./app/seller/CameraViewScreen";
 import { IMAGES } from "./constants/Images";
 import { COLORS } from "./constants/Colors";
+import { PastOrders } from "./app/buyer/PastOrders";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -188,6 +189,7 @@ export default function App() {
               component={ProductDetailsScreen}
             />
             <Stack.Screen name="Order" component={OrderScreen} />
+            <Stack.Screen name="PastOrders" component={PastOrders} />
             <Stack.Screen name="Profile Info" component={OrderHistoryScreen} />
             <Stack.Screen
               name="SellersOrderScreen"
