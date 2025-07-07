@@ -17,6 +17,7 @@ export interface CustomerProductOrder {
     quantity: number;
 }
 export interface PastOrder {
+    id: number;
     productName: string;
     productPrice: string;
     quantity: string;

@@ -258,7 +258,7 @@ export const createProduct = async (product: Products): Promise<boolean> => {
     }
 }
 
-export const getPastOrdersByOderId = async (orderId: string) => {
+export const getPastOrdersByOderId = async (orderId: string): Promise<PastOrder[]> => {
     try {
         console.debug("Call with Order Id >>", orderId);
         const url = `${baseUrl}/api/order/seller/past/orders/${orderId}`;
