@@ -228,6 +228,7 @@ export const getAllPurchaseHistory = async (userId: number): Promise<PurchaseHis
 export const getSellerOrderList = async (brandId: number): Promise<SellerOrder[]> => {
     try {  
         const url = `${baseUrl}/api/order/seller/orders/${brandId}`;
+        console.debug("Request Data for getSellerOrderList>>",url)
          const { data, status } = await axios.get<SellerOrder[]>(url);
         if (status === 200) {
             if(data != null) {
@@ -270,6 +271,24 @@ export const getPastOrdersByOderId = async (orderId: string): Promise<PastOrder[
         }
     } catch (error) {
         console.debug("Response Error Response PastOrders >>", error);
+        throw new Error(`PastOrders Error: ${error instanceof Error ? error.message : String(error)}`);
+    }
+}
+
+export const updateOrdersStatus = async (orderId: string, orderStatus: number): Promise<number> => {
+    try {
+        console.debug("Call with Order Id >>", orderId);
+        const url = `${baseUrl}/api/order/status/${orderId}/${orderStatus}`;
+        console.debug("Update Order Status URL >>", url);
+        const { data, status } = await axios.put<number>(url);
+        console.debug("Update Order Status Response >>", status, data);
+
+        if (status === 200 && data != null) {
+            console.debug("Order Status Updated >>", data);
+            return data;
+        }
+    } catch (error) {
+        console.debug("Response Error updateOrdersStatus >>", error);
         throw new Error(`PastOrders Error: ${error instanceof Error ? error.message : String(error)}`);
     }
 }

@@ -11,41 +11,86 @@ import React from "react";
 import { COLORS } from "../../constants/Colors";
 import { CustomBoldLabel, CustomLabel } from "../../components/CustomLabel";
 import { DataTable } from "react-native-paper";
-import { getSellerOrderList } from "../network/HttpService";
+import { getSellerOrderList, updateOrdersStatus } from "../network/HttpService";
 import { useFocusEffect } from "@react-navigation/native";
 import { getApplicationInfo } from "../../constants/StoreInfo";
-import Icon from "react-native-vector-icons/Ionicons";
+import { SellerOrder } from "../data/SellerOrder";
 
 export function SellerOrdersScreen() {
   let brandID: string;
   const [orderList, setOrderList] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [brandId, setBrandId] = React.useState(null);
+  const [currentTab, setCurrentTab] = React.useState("Orders");
   React.useEffect(() => {
     const loadOrderList = async () => {
       try {
         brandID = await getApplicationInfo("brandId");
         setBrandId(brandID);
-        setOrderList(await getSellerOrderList(Number(brandID)));
-        setLoading(false);
       } catch (error) {
         console.debug("Error from AsyncStorage", error);
       }
     };
     loadOrderList();
   }, []);
+
+  React.useEffect(() => {
+    async function loadInfo() {
+      console.debug("Updated UI orderList:> ", orderList);
+      const orders = await getSellerOrderList(Number(brandId));
+      setOrderList(currentTabFilter(currentTab, orders));
+      setLoading(false);
+    }
+    loadInfo();
+  }, [brandId]);
+
   useFocusEffect(
     React.useCallback(() => {
       async function loadInfo() {
-        this.setTimeout(async () => {
+        setTimeout(async () => {
           console.debug("<<<<<<Reloading Product on focus changed>>>>>>>");
-          console.debug("Loading BrandIfo", brandID);
-          setOrderList(await getSellerOrderList(Number(brandID)));
+          console.debug("Loading BrandIfo", brandId);
+          const orders = await getSellerOrderList(brandId);
+          setOrderList(currentTabFilter(currentTab, orders));
           setLoading(false);
         }, 1000);
       }
       loadInfo();
     }, [])
+  );
+
+  const handleOrdersTab = async () => {
+    setCurrentTab("Orders");
+    if (brandId) {
+      setLoading(true);
+      const orders = await getSellerOrderList(Number(brandId));
+      setOrderList(currentTabFilter("Orders", orders));
+      setLoading(false);
+    }
+  };
+  const handleReadyTab = async () => {
+    setCurrentTab("Ready");
+    if (brandId) {
+      setLoading(true);
+      const orders = await getSellerOrderList(Number(brandId));
+      setOrderList(currentTabFilter("Ready", orders));
+      setLoading(false);
+    }
+  };
+
+  const handleDeliveredTab = async () => {
+    setCurrentTab("Delivered");
+    if (brandId) {
+      setLoading(true);
+      const orders = await getSellerOrderList(Number(brandId));
+      setOrderList(currentTabFilter("Delivered", orders));
+      setLoading(false);
+    }
+  };
+  const renderEmptyComponent = () => (
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyText}>No items found</Text>
+    </View>
   );
 
   const renderItem = ({ item, index }) => (
@@ -81,16 +126,21 @@ export function SellerOrdersScreen() {
               ))}
           </DataTable>
         </View>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.prepareButton}>
-            <Text style={styles.text}>{"Prepare"}</Text>
-          </TouchableOpacity>
-          <View>
-            <TouchableOpacity style={styles.doneButton}>
-              <Text style={styles.text}>{"Done"}</Text>
+        {item.status != 2 && (
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.prepareButton}
+              onPress={() => handlePrepareAction(item.orderId, item.status)}
+            >
+              <Text style={styles.text}>{"Prepare"}</Text>
             </TouchableOpacity>
+            <View>
+              <TouchableOpacity style={styles.doneButton} disabled>
+                <Text style={styles.text}>{"Done"}</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        )}
       </View>
     </>
   );
@@ -101,16 +151,19 @@ export function SellerOrdersScreen() {
       ) : (
         <View style={styles.container}>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={handleOrdersTab}>
               <Text>{"Orders"}</Text>
             </TouchableOpacity>
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.button}>
+              <TouchableOpacity style={styles.button} onPress={handleReadyTab}>
                 <Text>{"Ready"}</Text>
               </TouchableOpacity>
             </View>
             <View>
-              <TouchableOpacity style={styles.button}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleDeliveredTab}
+              >
                 <Text>{"Delivered"}</Text>
               </TouchableOpacity>
             </View>
@@ -119,11 +172,39 @@ export function SellerOrdersScreen() {
             data={orderList}
             keyExtractor={(item) => item.id.toString()}
             renderItem={renderItem}
+            ListEmptyComponent={renderEmptyComponent}
+            contentContainerStyle={
+              orderList.length === 0 && styles.flatListContainer
+            }
           />
         </View>
       )}
     </View>
   );
+  async function handlePrepareAction(id: string, status: number) {
+    const updatedStatus: number = Number(status) + 1;
+    const updateResult = await updateOrdersStatus(id, updatedStatus);
+    console.debug("Update Result for Prepare Action:", updateResult);
+    setOrderList([]);
+  }
+  function currentTabFilter(
+    currentTab: string,
+    orders: SellerOrder[]
+  ): SellerOrder[] {
+    switch (currentTab) {
+      case "Orders":
+        // Show orders that are not ready or delivered
+        return orders.filter((order) => order.status == 0);
+      case "Ready":
+        // Show orders that are ready to be delivered
+        return orders.filter((order) => order.status == 1);
+      case "Delivered":
+        // Show orders that are delivered
+        return orders.filter((order) => order.status == 2);
+      default:
+        return orders;
+    }
+  }
 }
 const styles = StyleSheet.create({
   buttonContainer: {
@@ -199,5 +280,18 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "white",
+  },
+  emptyContainer: {
+    padding: 20,
+    alignItems: "center",
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#888",
+  },
+  flatListContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

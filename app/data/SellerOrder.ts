@@ -1,8 +1,8 @@
 export interface SellerOrder {
-    orderId: number;
+    orderId: string;
     brandId: number;
     userName: string;
-    status: string;
+    status: number;
     userAddress: string;
     userMobileNumber: string;
     totalPrice: number;
