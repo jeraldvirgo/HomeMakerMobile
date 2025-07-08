@@ -26,6 +26,7 @@ export function SellerOrdersScreen() {
     const loadOrderList = async () => {
       try {
         brandID = await getApplicationInfo("brandId");
+        console.debug("BrandID from AsyncStorage: ", brandID);
         setBrandId(brandID);
       } catch (error) {
         console.debug("Error from AsyncStorage", error);
@@ -37,7 +38,7 @@ export function SellerOrdersScreen() {
   React.useEffect(() => {
     async function loadInfo() {
       console.debug("Updated UI orderList:> ", orderList);
-      const orders = await getSellerOrderList(Number(brandId));
+      const orders = await getSellerOrderList(Number(brandID));
       setOrderList(currentTabFilter(currentTab, orders));
       setLoading(false);
     }
@@ -49,8 +50,8 @@ export function SellerOrdersScreen() {
       async function loadInfo() {
         setTimeout(async () => {
           console.debug("<<<<<<Reloading Product on focus changed>>>>>>>");
-          console.debug("Loading BrandIfo", brandId);
-          const orders = await getSellerOrderList(brandId);
+          console.debug("Loading BrandIfo", brandID);
+          const orders = await getSellerOrderList(Number(brandID));
           setOrderList(currentTabFilter(currentTab, orders));
           setLoading(false);
         }, 1000);
@@ -118,7 +119,7 @@ export function SellerOrdersScreen() {
             {item.customerProductOrder
               .slice(0, item.customerProductOrder.length)
               .map((tabItem: any) => (
-                <DataTable.Row key={tabItem.id}>
+                <DataTable.Row key={tabItem.productId}>
                   <DataTable.Cell>{tabItem.productName}</DataTable.Cell>
                   <DataTable.Cell>{tabItem.quantity}</DataTable.Cell>
                   <DataTable.Cell>{tabItem.productPrice}</DataTable.Cell>
@@ -189,20 +190,21 @@ export function SellerOrdersScreen() {
   }
   function currentTabFilter(
     currentTab: string,
-    orders: SellerOrder[]
+    orders: SellerOrder[] | null
   ): SellerOrder[] {
+    const safeOrders = Array.isArray(orders) ? orders : [];
     switch (currentTab) {
       case "Orders":
         // Show orders that are not ready or delivered
-        return orders.filter((order) => order.status == 0);
+        return safeOrders.filter((order) => order.status == 0);
       case "Ready":
         // Show orders that are ready to be delivered
-        return orders.filter((order) => order.status == 1);
+        return safeOrders.filter((order) => order.status == 1);
       case "Delivered":
         // Show orders that are delivered
-        return orders.filter((order) => order.status == 2);
+        return safeOrders.filter((order) => order.status == 2);
       default:
-        return orders;
+        return safeOrders;
     }
   }
 }

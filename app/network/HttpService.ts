@@ -3,11 +3,11 @@ import { User } from "../data/User";
 import { Brand } from "../data/Brand";
 import { storeApplicationInfo } from "../../constants/StoreInfo";
 import { Products } from "../data/Products";
-import { PastOrder, PurchaseHistory } from "../data/PurchaseHistory";
+import { InsightsSummary, PastOrder, PurchaseHistory } from "../data/PurchaseHistory";
 import { SellerOrder } from "../data/SellerOrder";
 
 // const baseUrl = 'https://home-maker-server-ce4c28abfefd.herokuapp.com'
-const baseUrl =  'http://10.16.52.64:8080'
+const baseUrl =  'http://10.16.52.73:8080'
 
 export const validateOTP = async (mobileNumber: string, otp:string): Promise<boolean> => {
     try {  
@@ -238,7 +238,7 @@ export const getSellerOrderList = async (brandId: number): Promise<SellerOrder[]
         } 
     } catch(error) {
         console.debug("Response Error getSellerOrderList >>", error);
-         throw new Error("getSellerOrderList Error", error)
+        //  throw new Error("getSellerOrderList Error", error)
     }
 
 }
@@ -271,7 +271,41 @@ export const getPastOrdersByOderId = async (orderId: string): Promise<PastOrder[
         }
     } catch (error) {
         console.debug("Response Error Response PastOrders >>", error);
-        throw new Error(`PastOrders Error: ${error instanceof Error ? error.message : String(error)}`);
+        // throw new Error(`PastOrders Error: ${error instanceof Error ? error.message : String(error)}`);
+    }
+}
+
+export const getBusinessInsights = async (sellerId: number): Promise<PastOrder[]> => {
+    try {
+        console.debug("Call with Order Id >>", sellerId);
+        const url = `${baseUrl}/api/order/seller/insights/${sellerId}`;
+        console.debug("Call with getBusinessInsights URL >>", url);
+        const { data, status } = await axios.get<PastOrder[]>(url);
+
+        if (status === 200 && data != null) {
+            console.debug("Response Past Orders >>", data);
+            return data;
+        }
+    } catch (error) {
+        console.debug("Response Error Response PastOrders >>", error);
+        // throw new Error(`PastOrders Error: ${error instanceof Error ? error.message : String(error)}`);
+    }
+}
+
+export const getBusinessInsightsRevenue = async (sellerId: number): Promise<InsightsSummary> => {
+    try {
+        console.debug("Call with Order Id >>", sellerId);
+        const url = `${baseUrl}/api/order/seller/past/orders/revenue/${sellerId}`;
+        console.debug("Call with getBusinessInsightsRevenue URL >>", url);
+        const { data, status } = await axios.get<InsightsSummary>(url);
+
+        if (status === 200 && data != null) {
+            console.debug("Response getBusinessInsightsRevenue >>", data);
+            return data;
+        }
+    } catch (error) {
+        console.debug("Response Error Response getBusinessInsightsRevenue >>", error);
+        // throw new Error(`getBusinessInsightsRevenue Error: ${error instanceof Error ? error.message : String(error)}`);
     }
 }
 
@@ -289,6 +323,6 @@ export const updateOrdersStatus = async (orderId: string, orderStatus: number): 
         }
     } catch (error) {
         console.debug("Response Error updateOrdersStatus >>", error);
-        throw new Error(`PastOrders Error: ${error instanceof Error ? error.message : String(error)}`);
+        // throw new Error(`PastOrders Error: ${error instanceof Error ? error.message : String(error)}`);
     }
 }

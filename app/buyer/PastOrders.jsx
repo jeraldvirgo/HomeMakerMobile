@@ -22,6 +22,7 @@ export function PastOrders({ route, navigation }) {
     }
     loadInfo();
   }, []);
+
   React.useEffect(() => {
     console.debug("Updated UI orderList:> ", orderList);
   }, [orderList]);

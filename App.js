@@ -100,7 +100,7 @@ export default function App() {
     return (
       <Tab.Navigator initialRouteName={SellerOrdersScreen}>
         <Tab.Screen
-          name="SellersOrderScreen"
+          name="SellersOrderScreen1"
           component={SellerOrdersScreen}
           options={{
             title: "Current Orders",
@@ -141,7 +141,7 @@ export default function App() {
           name="InsightsScreen"
           component={SellerInsightsScreen}
           options={{
-            title: "Insights",
+            title: "Business Insights",
             tabBarIcon: ({ focused }) => (
               <Image
                 source={require("./assets/insights.png")}

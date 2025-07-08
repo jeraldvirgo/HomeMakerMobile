@@ -23,3 +23,15 @@ export interface PastOrder {
     quantity: string;
     total: string
 }
+
+export interface InsightsSummary {
+    dayRevenue: number;
+    dayRevenueStartDateString: string;
+    dayRevenueEndDateString: string;
+    weekRevenue: number;
+    weekRevenueStartDateString: string;
+    weekRevenueEndDateString: string;
+    monthRevenue: number;
+    monthRevenueStartDateString: string;
+    monthRevenueEndDateString: string;
+}
