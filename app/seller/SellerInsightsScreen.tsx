@@ -42,6 +42,21 @@ export function SellerInsightsScreen() {
     loadInfo();
   }, []);
 
+  React.useEffect(() => {
+    async function loadInfo() {
+      try {
+        console.debug("Updated UI orderList:> ", orderList);
+        const orders = await getBusinessInsights(Number(brandId));
+        setOrderList(orders);
+        setRevenueInsights(await getBusinessInsightsRevenue(Number(brandId)));
+        console.debug("Business Insights: ", orders);
+      } catch (error) {
+        console.debug("Error from AsyncStorage", error);
+      }
+    }
+    loadInfo();
+  }, [brandId]);
+
   useFocusEffect(
     React.useCallback(() => {
       async function loadInfo() {
@@ -49,9 +64,9 @@ export function SellerInsightsScreen() {
           console.debug("Updated UI orderList:> ", orderList);
           const orders = await getBusinessInsights(Number(brandId));
           setOrderList(orders);
-          setRevenueInsights(await getBusinessInsightsRevenue(Number(brandId)));
-          console.debug("Business Insights: ", orders);
-        }, 1000);
+          // setRevenueInsights(await getBusinessInsightsRevenue(Number(brandId)));
+          // console.debug("Business Insights: ", orders);
+        }, 10);
       }
       loadInfo();
     }, [brandId])

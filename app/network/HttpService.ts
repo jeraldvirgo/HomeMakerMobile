@@ -7,8 +7,19 @@ import { InsightsSummary, PastOrder, PurchaseHistory } from "../data/PurchaseHis
 import { SellerOrder } from "../data/SellerOrder";
 
 // const baseUrl = 'https://home-maker-server-ce4c28abfefd.herokuapp.com'
-const baseUrl =  'http://10.16.52.73:8080'
+const baseUrl =  'http://192.168.0.199:8080'
 
+const insightsSummaryDefault: InsightsSummary = {
+    dayRevenue: 0,
+    dayRevenueStartDateString: "",
+    dayRevenueEndDateString: "",
+    weekRevenue: 0,
+    weekRevenueStartDateString: "",
+    weekRevenueEndDateString: "",
+    monthRevenue: 0,
+    monthRevenueStartDateString: "",
+    monthRevenueEndDateString: "",
+  };
 export const validateOTP = async (mobileNumber: string, otp:string): Promise<boolean> => {
     try {  
         const url = `${baseUrl}/api/user/validate/otp`;
@@ -305,6 +316,7 @@ export const getBusinessInsightsRevenue = async (sellerId: number): Promise<Insi
         }
     } catch (error) {
         console.debug("Response Error Response getBusinessInsightsRevenue >>", error);
+        return insightsSummaryDefault
         // throw new Error(`getBusinessInsightsRevenue Error: ${error instanceof Error ? error.message : String(error)}`);
     }
 }

@@ -20,14 +20,14 @@ export function SellerOrdersScreen() {
   let brandID: string;
   const [orderList, setOrderList] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
-  const [brandId, setBrandId] = React.useState(null);
+  const [brandId, setBrandId] = React.useState(1);
   const [currentTab, setCurrentTab] = React.useState("Orders");
   React.useEffect(() => {
     const loadOrderList = async () => {
       try {
         brandID = await getApplicationInfo("brandId");
         console.debug("BrandID from AsyncStorage: ", brandID);
-        setBrandId(brandID);
+        setBrandId(Number(brandID));
       } catch (error) {
         console.debug("Error from AsyncStorage", error);
       }
