@@ -2,7 +2,7 @@ import { View, StyleSheet, Text, Button, Image } from "react-native";
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 import React, { useEffect, useRef } from "react";
 import { CustomButton } from "../../components/CustomButton";
-export function CameraViewScreen({ navigation }) {
+export function CameraViewScreen({ route, navigation }) {
   const [facing, setFacing] = React.useState<CameraType>("back");
   const [permission, requestPermission] = useCameraPermissions();
   const [capturePreview, setCapturePreview] = React.useState(false);
@@ -22,7 +22,17 @@ export function CameraViewScreen({ navigation }) {
   }
   async function captureOk() {
     console.log("Success of capture image");
-    navigation.navigate("CreateProductScreen", { imageUri: capturePreviewUrl });
+    const { launchFrom } = route.params;
+    if (launchFrom === "CreateProductScreen") {
+      navigation.navigate("CreateProductScreen", {
+        imageUri: capturePreviewUrl,
+      });
+    }
+    if (launchFrom === "SellerProfileScreen") {
+      navigation.navigate("SellerProfile", {
+        imageUri: capturePreviewUrl,
+      });
+    }
   }
 
   if (!permission) {

@@ -36,7 +36,10 @@ export function CreateProductScreen({ route, navigation }) {
   }, []);
 
   const handleCamera = async () => {
-    navigation.navigate("CameraViewScreen");
+    // navigation.navigate("CameraViewScreen");
+    navigation.navigate("CameraViewScreen", {
+      launchFrom: "CreateProductScreen",
+    });
   };
   const handleAddProduct = async () => {
     let uploadImageUrl = await uploadFileFromUri({

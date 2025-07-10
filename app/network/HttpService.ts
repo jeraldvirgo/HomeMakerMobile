@@ -45,6 +45,7 @@ export const validateOTP = async (mobileNumber: string, otp:string): Promise<boo
 export const isExistingUser = async (mobileNumber: string): Promise<boolean> => {
     try {  
          const url = `${baseUrl}/api/user/mobile/${mobileNumber}`;
+        console.debug("Request URL isExistingUser>>", url)
          const { data, status } = await axios.get<User>(url);
         if (status === 200) {
             if(data != null) {

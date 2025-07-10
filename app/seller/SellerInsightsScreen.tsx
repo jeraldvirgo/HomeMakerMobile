@@ -64,8 +64,8 @@ export function SellerInsightsScreen() {
           console.debug("Updated UI orderList:> ", orderList);
           const orders = await getBusinessInsights(Number(brandId));
           setOrderList(orders);
-          // setRevenueInsights(await getBusinessInsightsRevenue(Number(brandId)));
-          // console.debug("Business Insights: ", orders);
+          setRevenueInsights(await getBusinessInsightsRevenue(Number(brandId)));
+          console.debug("Business Insights: ", orders);
         }, 10);
       }
       loadInfo();
@@ -100,7 +100,7 @@ export function SellerInsightsScreen() {
           <DataTable style={styles.container}>
             <DataTable.Header style={styles.tableHeader}>
               <DataTable.Title>
-                <Text style={styles.textStyleHeader}>Menu Items</Text>
+                <Text style={styles.textStyleHeader}>Menu</Text>
               </DataTable.Title>
               <DataTable.Title>
                 <Text style={styles.textStyleHeader}>Price</Text>
@@ -115,8 +115,8 @@ export function SellerInsightsScreen() {
             {orderList.slice(0, orderList.length).map((item) => (
               <DataTable.Row key={item.id}>
                 <DataTable.Cell>{item.productName}</DataTable.Cell>
-                <DataTable.Cell>{item.quantity}</DataTable.Cell>
                 <DataTable.Cell>{item.productPrice}</DataTable.Cell>
+                <DataTable.Cell>{item.quantity}</DataTable.Cell>
                 <DataTable.Cell>
                   {item.quantity * item.productPrice}
                 </DataTable.Cell>

@@ -1,20 +1,53 @@
-import { ScrollView, DeviceEventEmitter } from "react-native";
+import {
+  ScrollView,
+  DeviceEventEmitter,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React from "react";
 import { CustomButton } from "../../components/CustomButton";
 import { CustomLabel } from "../../components/CustomLabel";
 import { CustomTextbox } from "../../components/CustomTextbox";
 import { CustomAppImage } from "../../components/CustomAppImage";
 import { CustomTextboxMultiLine } from "../../components/CustomTextboxMultiLine";
+import { CapturePreviewImage } from "../../components/CustomAppImage";
 import {
   storeApplicationInfo,
   getApplicationInfo,
 } from "../../constants/StoreInfo";
-import { createBrand, createUser, updateUser } from "../network/HttpService";
+import {
+  createBrand,
+  createUser,
+  updateUser,
+  uploadFileFromUri,
+} from "../network/HttpService";
 export function SellerProfileScreen({ route, navigation }) {
   const { phoneNumber, OTP, isExistingUser } = route.params;
-  console.debug("Received PhoneNumber", phoneNumber);
-  console.debug("Received OTP", OTP);
-  console.debug("Received isExistingUser", isExistingUser);
+  let imageUriLocal = "";
+  let phoneNumberLocal = "";
+  let OTPLocal = "";
+  let isExistingUserLocal = false;
+  try {
+    const { imageUri } = route.params;
+    if (imageUri !== undefined) {
+      imageUriLocal = imageUri;
+      console.log("imageUri", imageUriLocal);
+      if (phoneNumber !== undefined) {
+        phoneNumberLocal = phoneNumber;
+      }
+      if (OTP !== undefined) {
+        OTPLocal = OTP;
+      }
+      if (isExistingUser !== undefined) {
+        isExistingUserLocal = isExistingUser;
+      }
+    }
+  } catch (e) {
+    console.log("Error On Load: ", e);
+  }
+  console.debug("Received PhoneNumber", phoneNumberLocal);
+  console.debug("Received OTP", OTPLocal);
+  console.debug("Received isExistingUser", isExistingUserLocal);
   const [userName, setUserName] = React.useState("");
   const [userBrandName, setUserBrandName] = React.useState("");
   const [userBrandDescription, setUserBrandDescription] = React.useState("");
@@ -37,19 +70,25 @@ export function SellerProfileScreen({ route, navigation }) {
       setUpiId(await getApplicationInfo("upiId"));
       setAvatarUrl(await getApplicationInfo("avatarUrl"));
     }
-    if (isExistingUser) {
+    if (!isExistingUserLocal) {
       console.debug("Is an Existing User !!!");
       getProfileInfo();
     }
   }, []);
 
+  const handleCamera = async () => {
+    navigation.navigate("CameraViewScreen", {
+      launchFrom: "SellerProfileScreen",
+    });
+  };
+
   const handleSubmit = async () => {
     try {
-      if (isExistingUser) {
+      if (isExistingUserLocal) {
         const updateUserData = {
           id: createdUserId,
           userName: userName,
-          mobileNumber: phoneNumber,
+          mobileNumber: phoneNumberLocal,
           address: address,
           email: emailId,
           avatarUrl: avatarUrl,
@@ -60,7 +99,7 @@ export function SellerProfileScreen({ route, navigation }) {
       } else {
         const createUserData = {
           userName: userName,
-          mobileNumber: phoneNumber,
+          mobileNumber: phoneNumberLocal,
           address: address,
           email: emailId,
           avatarUrl: avatarUrl,
@@ -70,11 +109,17 @@ export function SellerProfileScreen({ route, navigation }) {
         createdUserId = await createUser(createUserData);
       }
 
+      let uploadImageUrl = await uploadFileFromUri({
+        fileUri: imageUriLocal,
+        fileName: "productImage.jpg",
+        mimeType: "image/jpeg",
+      });
+      console.debug("Upload Image URL", uploadImageUrl);
+
       const createBrandData = {
         userId: createdUserId,
         brandName: userBrandName,
-        brandImageUrl:
-          "https://cdn3.vectorstock.com/i/1000x1000/78/67/home-food-symbol-vector-1957867.jpg",
+        brandImageUrl: uploadImageUrl,
         brandSubType: "veg",
         brandDescription: "userBrandDescription",
         brandDescriptionAdditional: "Additional Info",
@@ -88,7 +133,7 @@ export function SellerProfileScreen({ route, navigation }) {
       );
       await storeApplicationInfo("userId", createdUserId);
       await storeApplicationInfo("userName", userName);
-      await storeApplicationInfo("phoneNumber", phoneNumber);
+      await storeApplicationInfo("phoneNumber", phoneNumberLocal);
       await storeApplicationInfo("address", address);
       await storeApplicationInfo("userBrandName", userBrandName);
       await storeApplicationInfo("userBrandDescription", userBrandDescription);
@@ -105,52 +150,63 @@ export function SellerProfileScreen({ route, navigation }) {
 
   return (
     <ScrollView>
-      <CustomAppImage />
-      <CustomLabel title={"User Name"} />
-      <CustomTextbox
-        title={"Name"}
-        type="default"
-        value={userName}
-        onChangeText={setUserName}
-      ></CustomTextbox>
+      <View>
+        <TouchableOpacity
+          onPress={handleCamera}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <CapturePreviewImage uri={imageUriLocal} />
+        </TouchableOpacity>
+        <CustomLabel title={"User Name"} />
+        <CustomTextbox
+          title={"Name"}
+          type="default"
+          value={userName}
+          onChangeText={setUserName}
+        ></CustomTextbox>
 
-      <CustomLabel title={"Brand Name"} />
-      <CustomTextbox
-        title={"Brand Name"}
-        type="default"
-        value={userBrandName}
-        onChangeText={setUserBrandName}
-      ></CustomTextbox>
+        <CustomLabel title={"Brand Name"} />
+        <CustomTextbox
+          title={"Brand Name"}
+          type="default"
+          value={userBrandName}
+          onChangeText={setUserBrandName}
+        ></CustomTextbox>
 
-      <CustomLabel title={"Email Id"} />
-      <CustomTextbox
-        title={"Email Id"}
-        type="default"
-        value={emailId}
-        onChangeText={setEmailId}
-      ></CustomTextbox>
+        <CustomLabel title={"Email Id"} />
+        <CustomTextbox
+          title={"Email Id"}
+          type="default"
+          value={emailId}
+          onChangeText={setEmailId}
+        ></CustomTextbox>
 
-      <CustomLabel title={"Store Description"} />
-      <CustomTextboxMultiLine
-        title={"Store Description"}
-        value={userBrandDescription}
-        onChangeText={setUserBrandDescription}
-      ></CustomTextboxMultiLine>
+        <CustomLabel title={"Store Description"} />
+        <CustomTextboxMultiLine
+          title={"Store Description"}
+          value={userBrandDescription}
+          onChangeText={setUserBrandDescription}
+        ></CustomTextboxMultiLine>
 
-      <CustomLabel title={"Address"} />
-      <CustomTextboxMultiLine
-        title={"Address"}
-        value={address}
-        onChangeText={setAddress}
-      ></CustomTextboxMultiLine>
-      <CustomLabel title={"Payment UPI ID"} />
-      <CustomTextbox
-        title={"UPI ID"}
-        type="default"
-        value={upiId}
-        onChangeText={setUpiId}
-      ></CustomTextbox>
-      <CustomButton onPress={handleSubmit} title={"Done"} />
+        <CustomLabel title={"Address"} />
+        <CustomTextboxMultiLine
+          title={"Address"}
+          value={address}
+          onChangeText={setAddress}
+        ></CustomTextboxMultiLine>
+        <CustomLabel title={"Payment UPI ID"} />
+        <CustomTextbox
+          title={"UPI ID"}
+          type="default"
+          value={upiId}
+          onChangeText={setUpiId}
+        ></CustomTextbox>
+        <CustomButton onPress={handleSubmit} title={"Done"} />
+      </View>
     </ScrollView>
   );
 }

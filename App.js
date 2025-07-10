@@ -58,8 +58,11 @@ export default function App() {
   React.useEffect(() => {
     const isLoggedIn = async (setLogin) => {
       try {
-        // await deleteApplicationInfo("isLogin");
-        // await deleteApplicationInfo("userType");
+        await deleteApplicationInfo("isLogin");
+        await deleteApplicationInfo("userType");
+        await deleteApplicationInfo("isLogin");
+        await deleteApplicationInfo("userType");
+
         let isLogin = await getApplicationInfo("isLogin");
         let userType = await getApplicationInfo("userType");
         userType === "seller" ? setIsSeller(true) : setIsSeller(false);
@@ -209,6 +212,10 @@ export default function App() {
             <Stack.Screen
               name="SellerProfile"
               component={SellerProfileScreen}
+            />
+            <Stack.Screen
+              name="CameraViewScreen"
+              component={CameraViewScreen}
             />
           </Stack.Group>
         )}
