@@ -100,7 +100,7 @@ export default function App() {
     return (
       <Tab.Navigator initialRouteName={SellerOrdersScreen}>
         <Tab.Screen
-          name="SellersOrderScreen1"
+          name="SellersOrderScreen"
           component={SellerOrdersScreen}
           options={{
             title: "Current Orders",

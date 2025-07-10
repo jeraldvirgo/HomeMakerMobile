@@ -7,7 +7,7 @@ import { CustomSwitch } from "../../components/CustomSwitch";
 import { CapturePreviewImage } from "../../components/CustomAppImage";
 import { getApplicationInfo } from "../../constants/StoreInfo";
 import { Products } from "../data/Products";
-import { createProduct } from "../network/HttpService";
+import { createProduct, uploadFileFromUri } from "../network/HttpService";
 
 export function CreateProductScreen({ route, navigation }) {
   const [brandId, setBrandId] = React.useState("");
@@ -23,7 +23,7 @@ export function CreateProductScreen({ route, navigation }) {
     imageUriLocal = imageUri;
     console.log("imageUri", imageUriLocal);
   } catch (e) {
-    // console.log("Error On Load: ", e);
+    console.log("Error On Load: ", e);
   }
 
   React.useEffect(() => {
@@ -39,6 +39,12 @@ export function CreateProductScreen({ route, navigation }) {
     navigation.navigate("CameraViewScreen");
   };
   const handleAddProduct = async () => {
+    let uploadImageUrl = await uploadFileFromUri({
+      fileUri: imageUriLocal,
+      fileName: "productImage.jpg",
+      mimeType: "image/jpeg",
+    });
+    console.debug("Upload Image URL", uploadImageUrl);
     const updateUserData: Products = {
       brandId: Number(brandId),
       productName: productName,
@@ -46,11 +52,11 @@ export function CreateProductScreen({ route, navigation }) {
       productDescriptionAdditional: productAdditionalDescription,
       productPrice: Number(productPrice),
       type: isEnabled ? "Non-Veg" : "Veg",
-      productImageUrl:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0GXIb59Wp5ZqKvZiaH0xDF6PgVOzR4yWGMFnmudskHQ&s",
+      productImageUrl: uploadImageUrl,
     };
     console.log("Create Product Info ", updateUserData);
-    let prod = createProduct(updateUserData);
+
+    let prod = await createProduct(updateUserData);
     console.debug("Product Created", prod);
     navigation.pop();
   };

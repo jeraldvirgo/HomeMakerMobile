@@ -5,9 +5,11 @@ import { storeApplicationInfo } from "../../constants/StoreInfo";
 import { Products } from "../data/Products";
 import { InsightsSummary, PastOrder, PurchaseHistory } from "../data/PurchaseHistory";
 import { SellerOrder } from "../data/SellerOrder";
+import { Platform } from 'react-native';
+import { UploadFileOptions } from "../data/PurchaseHistory";
 
 // const baseUrl = 'https://home-maker-server-ce4c28abfefd.herokuapp.com'
-const baseUrl =  'http://192.168.0.199:8080'
+const baseUrl =  'http://10.16.52.38:8080'
 
 const insightsSummaryDefault: InsightsSummary = {
     dayRevenue: 0,
@@ -257,6 +259,8 @@ export const getSellerOrderList = async (brandId: number): Promise<SellerOrder[]
 export const createProduct = async (product: Products): Promise<boolean> => {
     try {  
         const url = `${baseUrl}/api/seller/product/create`;
+        console.debug("Request Data for Create Product>>",product)
+        console.debug("Request URL for Create Product>>",url)
         const response = await axios.post(url, product);
         if (response.status === 200) {
             console.debug("Create Product  >> : ",response.data )
@@ -338,3 +342,38 @@ export const updateOrdersStatus = async (orderId: string, orderStatus: number): 
         // throw new Error(`PastOrders Error: ${error instanceof Error ? error.message : String(error)}`);
     }
 }
+
+
+
+export const uploadFileFromUri = async ({
+  fileUri,
+  fileName,
+  mimeType,
+}: UploadFileOptions): Promise<string> => {
+  try {
+    const formData = new FormData();
+
+    formData.append('file', {
+      uri: Platform.OS === 'ios' ? fileUri.replace('file://', '') : fileUri,
+      type: mimeType,
+      name: fileName,
+    } as any); 
+
+    const response = await axios.post(`${baseUrl}/api/files/upload`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    console.log('Upload uploadFileFromUri success:', response.data);
+    if (response.status === 200) {
+      console.debug("Upload File URL>>", `${baseUrl}/api/files/download/${response.data}`);
+      return `${baseUrl}/api/files/download/${response.data}`; // Assuming the response contains the file URL
+    } else {
+      throw new Error('File upload failed');
+    }
+  } catch (error) {
+    console.error('Upload  uploadFileFromUri failed:', error);
+  }
+};
+

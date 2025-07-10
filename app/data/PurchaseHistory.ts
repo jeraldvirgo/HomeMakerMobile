@@ -35,3 +35,9 @@ export interface InsightsSummary {
     monthRevenueStartDateString: string;
     monthRevenueEndDateString: string;
 }
+
+export interface UploadFileOptions {
+    fileUri: string;
+    fileName: string;
+    mimeType: string;
+  }

@@ -36,6 +36,10 @@ export function SellerOrdersScreen() {
   }, []);
 
   React.useEffect(() => {
+    console.debug("BrandID changed: ", brandId);
+  }, [brandId]);
+
+  React.useEffect(() => {
     async function loadInfo() {
       console.debug("Updated UI orderList:> ", orderList);
       const orders = await getSellerOrderList(Number(brandID));
